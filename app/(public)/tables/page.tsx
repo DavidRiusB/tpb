@@ -1,6 +1,4 @@
-// app/(public)/tables/page.tsx
-
-import { TableCard } from "@/components/cards/table-card";
+import { TableCard } from "@/components/cards/Table-card";
 import type { Table } from "@/types/table";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
