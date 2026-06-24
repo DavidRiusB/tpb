@@ -3,6 +3,7 @@ import { UserCard } from "@/components/cards/UserCard";
 import type { TableDetail } from "@/types/table-detail";
 import { TableType } from "@/lib/enums/table-type.enum";
 import { Recurrence } from "@/lib/enums/recurrence.enum";
+import { JoinRequestButton } from "@/components/tables/JoinRequestButton";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
@@ -104,7 +105,9 @@ export default async function TableDetailPage({
         )}
       </section>
 
-      {/* TODO: "Request to join" button — needs auth + POST /tables/:id/requests */}
+      <div className="mt-8">
+        <JoinRequestButton tableId={table.id} />
+      </div>
     </main>
   );
 }
