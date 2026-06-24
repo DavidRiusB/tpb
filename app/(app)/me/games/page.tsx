@@ -73,7 +73,7 @@ export default function MyGamesPage() {
             {activeMemberships.map((m) => (
               <Link
                 key={m.id}
-                href={`/tables/${m.table.id}`}
+                href={`/me/games/${m.table.id}`}
                 className="rounded-lg border border-gray-300 bg-white p-3 hover:bg-gray-50"
               >
                 <span className="font-medium">{m.table.title}</span>
