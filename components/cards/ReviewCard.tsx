@@ -1,14 +1,6 @@
-// components/cards/ReviewCard.tsx
 import type { PlayerReview } from "@/types/player-detail";
 
 export function ReviewCard({ review }: { review: PlayerReview }) {
-  // all badges on this review, flattened for display
-  const badges = [
-    ...review.sharedBadges,
-    ...review.dmBadges,
-    ...review.playerBadges,
-  ];
-
   return (
     <div className="rounded-lg border border-gray-300 bg-white p-3">
       {/* Reviewer */}
@@ -32,9 +24,9 @@ export function ReviewCard({ review }: { review: PlayerReview }) {
       )}
 
       {/* Badges */}
-      {badges.length > 0 && (
+      {review.badges.length > 0 && (
         <div className="flex flex-wrap gap-1">
-          {badges.map((badge) => (
+          {review.badges.map((badge) => (
             <span
               key={badge}
               className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-700"

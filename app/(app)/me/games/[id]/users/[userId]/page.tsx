@@ -1,4 +1,3 @@
-// app/(app)/me/games/[id]/users/[userId]/page.tsx
 "use client";
 
 import { use, useEffect, useState } from "react";
@@ -7,11 +6,8 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
 import { ReviewCard } from "@/components/cards/ReviewCard";
-import {
-  categorizeReview,
-  type PlayerDetail,
-  type PlayerReview,
-} from "@/types/player-detail";
+import { type PlayerDetail, type PlayerReview } from "@/types/player-detail";
+import { ReviewType } from "@/types/review-type.enum";
 
 export default function PlayerDetailPage({
   params,
@@ -73,14 +69,12 @@ export default function PlayerDetailPage({
 
   if (!player) return null;
 
-  // bucket reviews into the three boxes, one review per box by priority
-  const boxes: Record<string, PlayerReview[]> = {
-    dm: [],
-    player: [],
-    shared: [],
-  };
+  // split reviews by type — a review is either a DM review or a player review
+  const dmReviews: PlayerReview[] = [];
+  const playerReviews: PlayerReview[] = [];
   for (const review of player.reviews) {
-    boxes[categorizeReview(review)].push(review);
+    if (review.type === ReviewType.DM) dmReviews.push(review);
+    else playerReviews.push(review);
   }
 
   return (
@@ -114,11 +108,10 @@ export default function PlayerDetailPage({
         </div>
       )}
 
-      {/* Review boxes */}
+      {/* Review boxes — two, by review type */}
       <div className="flex flex-col gap-6">
-        <ReviewBox title="As a DM" reviews={boxes.dm} />
-        <ReviewBox title="As a Player" reviews={boxes.player} />
-        <ReviewBox title="Shared" reviews={boxes.shared} />
+        <ReviewBox title="As a DM" reviews={dmReviews} />
+        <ReviewBox title="As a Player" reviews={playerReviews} />
       </div>
     </main>
   );

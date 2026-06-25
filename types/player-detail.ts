@@ -1,4 +1,5 @@
-// types/player-detail.ts
+import { ReviewType } from "@/types/review-type.enum";
+
 type ReviewReviewer = {
   id: string;
   username: string;
@@ -8,9 +9,8 @@ type ReviewReviewer = {
 
 export type PlayerReview = {
   id: string;
-  sharedBadges: string[];
-  dmBadges: string[];
-  playerBadges: string[];
+  type: ReviewType;
+  Badges: string[];
   writtenReview: string | null;
   createdAt: string;
   reviewer: ReviewReviewer;
@@ -28,11 +28,3 @@ export type PlayerDetail = {
 };
 
 export type ReviewCategory = "dm" | "player" | "shared";
-
-// one review -> one box, by priority dm > player > shared.
-// swap this single function when the review model gets cleaned up.
-export function categorizeReview(r: PlayerReview): ReviewCategory {
-  if (r.dmBadges.length > 0) return "dm";
-  if (r.playerBadges.length > 0) return "player";
-  return "shared";
-}
