@@ -8,7 +8,7 @@ import { api, ApiError } from "@/lib/api";
 import { UserProfile } from "@/components/profile/UserProfile";
 import type { PlayerDetail } from "@/types/player-detail";
 
-export default function PlayerDetailPage({
+export default function ManageMemberProfilePage({
   params,
 }: {
   params: Promise<{ id: string; userId: string }>;
@@ -23,7 +23,7 @@ export default function PlayerDetailPage({
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/login?redirect=/me/games/${id}/users/${userId}`);
+      router.push(`/login?redirect=/me/tables/${id}/manage/members/${userId}`);
     }
   }, [authLoading, user, id, userId, router]);
 
@@ -32,7 +32,7 @@ export default function PlayerDetailPage({
     let active = true;
     (async () => {
       try {
-        // MEMBER context — player detail endpoint (gated by membership)
+        // DM viewing a MEMBER — player-detail endpoint (ACTIVE member gate)
         const res = await api<PlayerDetail>(`/tables/${id}/players/${userId}`);
         if (active) setProfile(res);
       } catch (err) {
@@ -40,7 +40,7 @@ export default function PlayerDetailPage({
           setError(
             err instanceof ApiError && err.status === 403
               ? "You don't have access to this profile."
-              : "Player not found.",
+              : "Member not found.",
           );
         }
       } finally {
@@ -58,8 +58,8 @@ export default function PlayerDetailPage({
     return (
       <main className="mx-auto max-w-3xl p-8">
         <p className="text-gray-600">{error}</p>
-        <Link href={`/me/games/${id}`} className="text-sm underline">
-          Back to table
+        <Link href={`/me/tables/${id}/manage`} className="text-sm underline">
+          Back to manage
         </Link>
       </main>
     );
@@ -68,7 +68,15 @@ export default function PlayerDetailPage({
 
   return (
     <main className="mx-auto max-w-3xl p-8">
-      <UserProfile profile={profile} />
+      <Link
+        href={`/me/tables/${id}/manage`}
+        className="text-sm text-gray-400 hover:underline"
+      >
+        ← Back to manage
+      </Link>
+      <div className="mt-4">
+        <UserProfile profile={profile} />
+      </div>
     </main>
   );
 }

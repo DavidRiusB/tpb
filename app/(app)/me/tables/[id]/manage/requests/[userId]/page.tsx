@@ -8,7 +8,7 @@ import { api, ApiError } from "@/lib/api";
 import { UserProfile } from "@/components/profile/UserProfile";
 import type { PlayerDetail } from "@/types/player-detail";
 
-export default function PlayerDetailPage({
+export default function ConnectionProfilePage({
   params,
 }: {
   params: Promise<{ id: string; userId: string }>;
@@ -23,7 +23,7 @@ export default function PlayerDetailPage({
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/login?redirect=/me/games/${id}/users/${userId}`);
+      router.push(`/login?redirect=/me/tables/${id}/manage/requests/${userId}`);
     }
   }, [authLoading, user, id, userId, router]);
 
@@ -32,15 +32,17 @@ export default function PlayerDetailPage({
     let active = true;
     (async () => {
       try {
-        // MEMBER context — player detail endpoint (gated by membership)
-        const res = await api<PlayerDetail>(`/tables/${id}/players/${userId}`);
+        // CONNECTION context — gated by a join request (DM viewing requester)
+        const res = await api<PlayerDetail>(
+          `/tables/${id}/connections/${userId}`,
+        );
         if (active) setProfile(res);
       } catch (err) {
         if (active) {
           setError(
             err instanceof ApiError && err.status === 403
               ? "You don't have access to this profile."
-              : "Player not found.",
+              : "Profile not found.",
           );
         }
       } finally {
@@ -52,23 +54,34 @@ export default function PlayerDetailPage({
     };
   }, [user, id, userId]);
 
-  if (authLoading || loading)
+  if (authLoading || loading) {
     return <main className="p-8 text-gray-500">Loading…</main>;
+  }
+
   if (error) {
     return (
       <main className="mx-auto max-w-3xl p-8">
         <p className="text-gray-600">{error}</p>
-        <Link href={`/me/games/${id}`} className="text-sm underline">
-          Back to table
+        <Link href={`/me/tables/${id}/manage/`} className="text-sm underline">
+          Back to manage
         </Link>
       </main>
     );
   }
+
   if (!profile) return null;
 
   return (
     <main className="mx-auto max-w-3xl p-8">
-      <UserProfile profile={profile} />
+      <Link
+        href={`/me/tables/${id}/manage/`}
+        className="text-sm text-gray-400 hover:underline"
+      >
+        ← Back to manage
+      </Link>
+      <div className="mt-4">
+        <UserProfile profile={profile} />
+      </div>
     </main>
   );
 }

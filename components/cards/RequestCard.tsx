@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { api, ApiError } from "@/lib/api";
 import { JoinRequestStatus } from "@/lib/enums/join-request-status-enum";
 import type { ManagementRequest } from "@/types/table-management";
+import Link from "next/link";
 
 export function RequestCard({
   tableId,
@@ -36,10 +37,13 @@ export function RequestCard({
   return (
     <div className="rounded-lg border border-gray-300 bg-white p-3">
       <div className="mb-2 flex items-center gap-2">
-        <Avatar name={request.user.displayName ?? request.user.username} />
-        <span className="text-sm font-medium">
+        <Avatar name={request.user.displayName ?? request.user.username} />{" "}
+        <Link
+          href={`/me/tables/${tableId}/manage/requests/${request.user.id}`}
+          className="text-sm font-medium hover:underline"
+        >
           {request.user.displayName ?? request.user.username}
-        </span>
+        </Link>
       </div>
 
       {request.message && (

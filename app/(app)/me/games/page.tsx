@@ -96,7 +96,7 @@ export default function MyGamesPage() {
             {pendingRequests.map((r) => (
               <Link
                 key={r.id}
-                href={`/tables/${r.table.id}`}
+                href={`games/${r.table.id}`} // well this is a problem
                 className="rounded-lg border border-gray-300 bg-white p-3 hover:bg-gray-50"
               >
                 <span className="font-medium">{r.table.title}</span>

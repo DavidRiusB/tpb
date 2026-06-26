@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Avatar } from "@/components/ui/Avatar";
 import { api, ApiError } from "@/lib/api";
 import type { ManagementMembership } from "@/types/table-management";
@@ -21,14 +22,13 @@ export function MemberCard({
     setError(null);
     setSubmitting(true);
     try {
-      // memberId here is the MEMBERSHIP id, not the user id
       await api(`/tables/${tableId}/members/${membership.id}`, {
         method: "DELETE",
       });
-      onActionDone(); // refetch /manage — member drops from active list
+      onActionDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Kick failed");
-      setSubmitting(false); // only reset on error; on success card unmounts
+      setSubmitting(false);
     }
   }
 
@@ -38,9 +38,12 @@ export function MemberCard({
         <Avatar
           name={membership.user.displayName ?? membership.user.username}
         />
-        <span className="text-sm font-medium">
+        <Link
+          href={`/me/tables/${tableId}/manage/members/${membership.user.id}`}
+          className="text-sm font-medium hover:underline"
+        >
           {membership.user.displayName ?? membership.user.username}
-        </span>
+        </Link>
       </div>
 
       {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
@@ -53,7 +56,6 @@ export function MemberCard({
         >
           {submitting ? "…" : "Kick"}
         </button>
-        {/* TODO: Chat button when chat UI exists */}
       </div>
     </div>
   );
