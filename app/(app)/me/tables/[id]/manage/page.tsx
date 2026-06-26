@@ -1,7 +1,7 @@
 // app/(app)/me/tables/[id]/manage/page.tsx
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -9,6 +9,8 @@ import { api, ApiError } from "@/lib/api";
 import type { TableManagement } from "@/types/table-management";
 import { MembershipStatus } from "@/lib/enums/membership-status.enum";
 import { JoinRequestStatus } from "@/lib/enums/join-request-status-enum";
+import { RequestCard } from "@/components/cards/RequestCard";
+import { Avatar } from "@/components/ui/Avatar";
 
 export default function ManageTablePage({
   params,
@@ -19,9 +21,27 @@ export default function ManageTablePage({
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
+  // inside ManageTablePage, replace the data-fetching useEffect with this pattern:
+
   const [data, setData] = useState<TableManagement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // callable fetch — used on mount AND after an action
+  const loadManagement = useCallback(async () => {
+    try {
+      const res = await api<TableManagement>(`/tables/${id}/manage`);
+      setData(res);
+    } catch (err) {
+      setError(
+        err instanceof ApiError && err.status === 403
+          ? "Only the table owner can manage this table."
+          : "Table not found.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -30,28 +50,8 @@ export default function ManageTablePage({
   }, [authLoading, user, id, router]);
 
   useEffect(() => {
-    if (!user) return;
-    let active = true;
-    (async () => {
-      try {
-        const res = await api<TableManagement>(`/tables/${id}/manage`);
-        if (active) setData(res);
-      } catch (err) {
-        if (active) {
-          setError(
-            err instanceof ApiError && err.status === 403
-              ? "Only the table owner can manage this table."
-              : "Table not found.",
-          );
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [user, id]);
+    if (user) loadManagement();
+  }, [user, loadManagement]);
 
   if (authLoading || loading) {
     return <main className="p-8 text-gray-500">Loading…</main>;
@@ -156,18 +156,12 @@ export default function ManageTablePage({
           ) : (
             <div className="flex flex-col gap-2">
               {pendingRequests.map((r) => (
-                <div key={r.id} className="rounded border border-gray-200 p-2">
-                  <div className="flex items-center gap-2">
-                    <Avatar name={r.user.displayName ?? r.user.username} />
-                    <span className="text-sm font-medium">
-                      {r.user.displayName ?? r.user.username}
-                    </span>
-                  </div>
-                  {r.message && (
-                    <p className="mt-1 text-xs text-gray-600">{r.message}</p>
-                  )}
-                  {/* actions wired in next pass */}
-                </div>
+                <RequestCard
+                  key={r.id}
+                  tableId={table.id}
+                  request={r}
+                  onActionDone={loadManagement}
+                />
               ))}
             </div>
           )}
@@ -182,14 +176,6 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex justify-between gap-2">
       <dt className="text-gray-400">{label}</dt>
       <dd className="text-right text-gray-800">{value}</dd>
-    </div>
-  );
-}
-
-function Avatar({ name }: { name: string }) {
-  return (
-    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-medium text-gray-600">
-      {name.charAt(0).toUpperCase()}
     </div>
   );
 }
