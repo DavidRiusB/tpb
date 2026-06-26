@@ -15,7 +15,7 @@ export default function MemberTablePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params); // unwrap the params promise in a client component
+  const { id } = use(params); 
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 

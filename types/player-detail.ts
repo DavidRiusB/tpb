@@ -10,7 +10,7 @@ type ReviewReviewer = {
 export type PlayerReview = {
   id: string;
   type: ReviewType;
-  Badges: string[];
+  badges: string[];
   writtenReview: string | null;
   createdAt: string;
   reviewer: ReviewReviewer;
