@@ -44,6 +44,12 @@ export default function MyTablesPage() {
 
   return (
     <main className="mx-auto max-w-3xl p-8">
+      <Link
+        href="me/games"
+        className="mb-4 inline-block text-sm text-gray-400 hover:underline"
+      >
+        ← Back to Games
+      </Link>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Tables</h1>
         <Link

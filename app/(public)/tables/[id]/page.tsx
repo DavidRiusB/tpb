@@ -4,6 +4,7 @@ import type { TableDetail } from "@/types/table-detail";
 import { TableType } from "@/lib/enums/table-type.enum";
 import { Recurrence } from "@/lib/enums/recurrence.enum";
 import { JoinRequestButton } from "@/components/tables/JoinRequestButton";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
@@ -37,6 +38,9 @@ export default async function TableDetailPage({
 
   return (
     <main className="mx-auto max-w-3xl p-8">
+      <Link href="/tables" className="text-sm text-gray-400 hover:underline">
+        ← Back to tables
+      </Link>
       {/* Header */}
       <div className="mb-6">
         <div className="mb-2 flex items-start justify-between gap-3">
@@ -51,9 +55,26 @@ export default async function TableDetailPage({
         </p>
       </div>
 
-      {/* Description */}
-      {table.description && (
-        <p className="mb-6 text-gray-700">{table.description}</p>
+      {/* Summary — short pitch */}
+      {table.summary && <p className="mb-4 text-gray-700">{table.summary}</p>}
+
+      {/* Details — story/setting/lore */}
+      {table.details && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">About this game</h2>
+          <p className="whitespace-pre-line text-gray-700">{table.details}</p>
+        </div>
+      )}
+
+      {/* House rules — table meta (homebrew, allowed material). public,
+    so players can decide before joining. */}
+      {table.houseRules && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">House rules</h2>
+          <p className="whitespace-pre-line text-gray-700">
+            {table.houseRules}
+          </p>
+        </div>
       )}
 
       {/* Details grid */}

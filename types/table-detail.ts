@@ -1,7 +1,4 @@
-import { AgeRequirement } from "@/lib/enums/age-requirement.enum";
-import { Recurrence } from "@/lib/enums/recurrence.enum";
-import { TableStatus } from "@/lib/enums/table-status.enum";
-import { TableType } from "@/lib/enums/table-type.enum";
+import { Table } from "./table";
 
 // a user as seen in table detail — public fields + reputation summary
 export type TableUser = {
@@ -13,23 +10,12 @@ export type TableUser = {
   reviewCount: number;
 };
 
-export type TableDetail = {
-  id: string;
-  title: string;
-  system: string;
-  description: string | null;
-  tableType: TableType;
-  recurrence: Recurrence;
-  scheduledAt: string;
-  timezone: string;
-  estimatedDurationHours: number | null;
-  isOnline: boolean;
-  platform: string;
-  location: string | null;
-  seatsTotal: number;
-  language: string;
-  ageRequirement: AgeRequirement;
-  status: TableStatus;
-  dm: TableUser;
+// detail
+export type TableDetail = Table & {
+  dm: TableUser; // with badges
   players: TableUser[];
+  // member-only fields (houseRules, links) optional, present on member-view
+  houseRules?: string;
+  links?: string;
+  details: string | null;
 };

@@ -3,10 +3,11 @@ import { TableCard } from "@/components/cards/Table-card";
 import { TableFilters } from "@/components/tables/TableFilters";
 import { Pagination } from "@/components/ui/Pagination";
 import type { Table } from "@/types/table";
+import { TableBoard } from "@/types/table-board";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
-type TablesResponse = { data: Table[]; total: number };
+type TablesResponse = { data: TableBoard[]; total: number };
 
 // the filter keys we forward to the backend, straight from FindTablesDto
 const FILTER_KEYS = [

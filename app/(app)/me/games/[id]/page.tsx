@@ -15,7 +15,7 @@ export default function MemberTablePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params); 
+  const { id } = use(params);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -102,8 +102,32 @@ export default function MemberTablePage({
         </button>
       </div>
 
-      {table.description && (
-        <p className="mb-6 text-gray-700">{table.description}</p>
+      {/* Summary — short pitch */}
+      {table.summary && <p className="mb-4 text-gray-700">{table.summary}</p>}
+
+      {/* Details — story/setting/lore */}
+      {table.details && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">About this game</h2>
+          <p className="whitespace-pre-line text-gray-700">{table.details}</p>
+        </div>
+      )}
+
+      {/* House rules — table meta (homebrew, allowed material). public,
+    so players can decide before joining. */}
+      {table.houseRules && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">House rules</h2>
+          <p className="whitespace-pre-line text-gray-700">
+            {table.houseRules}
+          </p>
+        </div>
+      )}
+      {table.links && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">Links</h2>
+          <p className="whitespace-pre-line text-gray-700">{table.links}</p>
+        </div>
       )}
 
       {/* Details grid */}

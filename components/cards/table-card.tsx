@@ -1,7 +1,8 @@
 import Link from "next/link";
-import type { Table } from "@/types/table";
+
 import { TableType } from "@/lib/enums/table-type.enum";
 import { Recurrence } from "@/lib/enums/recurrence.enum";
+import { TableBoard } from "@/types/table-board";
 
 function formatSchedule(iso: string, timezone: string): string {
   // iso is a string over the wire — convert to Date only here, at display time
@@ -13,7 +14,7 @@ function formatSchedule(iso: string, timezone: string): string {
   });
 }
 
-export function TableCard({ table }: { table: Table }) {
+export function TableCard({ table }: { table: TableBoard }) {
   const isRecurring = table.recurrence !== Recurrence.NONE;
 
   return (
@@ -29,17 +30,16 @@ export function TableCard({ table }: { table: Table }) {
         </span>
       </div>
 
-      {/* Type + recurrence */}
+      {/* Type + recurrence + experienceLevel*/}
       <p className="mb-2 text-sm text-gray-600">
         {table.tableType === TableType.CAMPAIGN ? "Campaign" : "One-shot"}
         {isRecurring && ` · ${table.recurrence.toLowerCase()}`}
+        {` · ${table.experienceLevel.toLowerCase().replace(/_/g, " ")}`}
       </p>
 
       {/* Description (truncated) */}
-      {table.description && (
-        <p className="mb-3 line-clamp-2 text-sm text-gray-700">
-          {table.description}
-        </p>
+      {table.summary && (
+        <p className="mb-3  text-sm text-gray-700">{table.summary}</p>
       )}
 
       {/* Meta row: when, where, language */}

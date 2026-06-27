@@ -126,10 +126,36 @@ export default function ManageTablePage({
               value={`${activeMembers.length}/${table.seatsTotal}`}
             />
           </dl>
-          {table.description && (
-            <p className="mt-3 border-t border-gray-100 pt-3 text-sm text-gray-600">
-              {table.description}
-            </p>
+          {/* Summary — short pitch */}
+          {table.summary && (
+            <p className="mb-4 text-gray-700">{table.summary}</p>
+          )}
+
+          {/* Details — story/setting/lore */}
+          {table.details && (
+            <div className="mb-6">
+              <h2 className="mb-2 text-lg font-semibold">About this game</h2>
+              <p className="whitespace-pre-line text-gray-700">
+                {table.details}
+              </p>
+            </div>
+          )}
+
+          {/* House rules — table meta (homebrew, allowed material). public,
+    so players can decide before joining. */}
+          {table.houseRules && (
+            <div className="mb-6">
+              <h2 className="mb-2 text-lg font-semibold">House rules</h2>
+              <p className="whitespace-pre-line text-gray-700">
+                {table.houseRules}
+              </p>
+            </div>
+          )}
+          {table.links && (
+            <div className="mb-6">
+              <h2 className="mb-2 text-lg font-semibold">Links</h2>
+              <p className="whitespace-pre-line text-gray-700">{table.links}</p>
+            </div>
           )}
         </section>
 

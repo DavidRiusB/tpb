@@ -1,5 +1,7 @@
 import { JoinRequestStatus } from "@/lib/enums/join-request-status-enum";
 import { MembershipStatus } from "@/lib/enums/membership-status.enum";
+import { Table } from "./table";
+import { TableDetail } from "./table-detail";
 
 type PublicUser = {
   id: string;
@@ -25,24 +27,7 @@ export type ManagementRequest = {
 };
 
 export type TableManagement = {
-  table: {
-    id: string;
-    title: string;
-    system: string;
-    description: string | null;
-    tableType: string;
-    recurrence: string;
-    scheduledAt: string;
-    timezone: string;
-    estimatedDurationHours: number | null;
-    isOnline: boolean;
-    platform: string;
-    location: string | null;
-    seatsTotal: number;
-    language: string;
-    ageRequirement: string;
-    status: string;
-  };
+  table: TableDetail;
   memberships: ManagementMembership[];
   requests: ManagementRequest[];
 };
