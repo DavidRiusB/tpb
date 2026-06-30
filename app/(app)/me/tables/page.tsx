@@ -45,7 +45,7 @@ export default function MyTablesPage() {
   return (
     <main className="mx-auto max-w-3xl p-8">
       <Link
-        href="me/games"
+        href="/me/games"
         className="mb-4 inline-block text-sm text-gray-400 hover:underline"
       >
         ← Back to Games
@@ -53,7 +53,7 @@ export default function MyTablesPage() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Tables</h1>
         <Link
-          href="/tables/new"
+          href="/me/tables/new"
           className="rounded bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700"
         >
           Create Table
@@ -63,7 +63,7 @@ export default function MyTablesPage() {
       {data.dmTables.length === 0 ? (
         <p className="text-sm text-gray-500">
           You aren&apos;t running any tables yet.{" "}
-          <Link href="/tables/new" className="underline">
+          <Link href="/me/tables/new" className="underline">
             Create one
           </Link>{" "}
           to start.

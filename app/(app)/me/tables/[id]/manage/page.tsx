@@ -105,7 +105,16 @@ export default function ManageTablePage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Column 1 — table info */}
         <section className="rounded-lg border border-gray-300 bg-white p-4">
-          <h2 className="mb-3 text-lg font-semibold">Table</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Table</h2>
+            <Link
+              href={`/me/tables/${table.id}/edit`}
+              className="text-sm text-gray-400 hover:underline"
+              title="Edit table details"
+            >
+              Edit 🛠️
+            </Link>
+          </div>
           <dl className="space-y-2 text-sm">
             <Row label="System" value={table.system} />
             <Row label="Type" value={table.tableType} />
@@ -126,6 +135,7 @@ export default function ManageTablePage({
               value={`${activeMembers.length}/${table.seatsTotal}`}
             />
           </dl>
+
           {/* Summary — short pitch */}
           {table.summary && (
             <p className="mb-4 text-gray-700">{table.summary}</p>

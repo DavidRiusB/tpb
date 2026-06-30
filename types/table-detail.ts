@@ -18,4 +18,5 @@ export type TableDetail = Table & {
   houseRules?: string;
   links?: string;
   details: string | null;
+  autoAccept: boolean;
 };
