@@ -8,17 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { api, ApiError } from "@/lib/api";
-
-// shape the backend's /users/me returns — adjust fields to match your entity
-type User = {
-  id: string;
-  username: string;
-  notificationEmail: string;
-  role: string;
-  displayName?: string;
-  avatarUrl?: string;
-  bio?: string;
-};
+import { User } from "@/types/user";
 
 type AuthContextValue = {
   user: User | null;
