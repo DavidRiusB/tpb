@@ -9,6 +9,7 @@ import type { TableDetail } from "@/types/table-detail";
 import { UserCard } from "@/components/cards/UserCard";
 import { TableType } from "@/lib/enums/table-type.enum";
 import { Recurrence } from "@/lib/enums/recurrence.enum";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function MemberTablePage({
   params,
@@ -22,6 +23,19 @@ export default function MemberTablePage({
   const [table, setTable] = useState<TableDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  async function handleLeave() {
+    setLeaving(true);
+    try {
+      await api(`/tables/${table!.id}/members/me`, { method: "DELETE" });
+      router.push("/me/games"); // no longer a member, leave the page
+    } catch {
+      alert("Couldn't leave the table.");
+      setLeaving(false);
+    }
+  }
 
   // per-page auth gate (interim until route-group gate)
   useEffect(() => {
@@ -77,6 +91,23 @@ export default function MemberTablePage({
 
   return (
     <main className="mx-auto max-w-3xl p-8">
+      <button
+        onClick={() => setLeaveOpen(true)}
+        className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+      >
+        Leave table
+      </button>
+
+      <ConfirmModal
+        open={leaveOpen}
+        title="Leave this table?"
+        message="You'll be removed from the table. You can request to join again later."
+        confirmLabel="Leave"
+        danger
+        loading={leaving}
+        onConfirm={handleLeave}
+        onCancel={() => setLeaveOpen(false)}
+      />
       {/* Header */}
       <div className="mb-6">
         <div className="mb-2 flex items-start justify-between gap-3">

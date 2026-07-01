@@ -12,6 +12,8 @@ import { RequestCard } from "@/components/cards/RequestCard";
 
 import { MemberCard } from "@/components/cards/MemberCard";
 import { HistoryRow } from "@/components/cards/HistoryRow";
+import { TableStatus } from "@/lib/enums/table-status.enum";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function ManageTablePage({
   params,
@@ -27,6 +29,44 @@ export default function ManageTablePage({
   const [error, setError] = useState<string | null>(null);
   const [memberTab, setMemberTab] = useState<"active" | "past">("active");
   const [requestTab, setRequestTab] = useState<"pending" | "past">("pending");
+  const [statusSaving, setStatusSaving] = useState(false);
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await api(`/tables/${table.id}`, { method: "DELETE" });
+      router.push("/me/tables"); // table gone
+    } catch {
+      alert("Couldn't delete the table.");
+      setDeleting(false);
+    }
+  }
+
+  // handler — PATCHes status, then refetches management so everything stays in sync
+  async function handleStatusChange(next: TableStatus) {
+    if (next === table.status) return;
+    if (
+      !window.confirm(
+        `Change status to ${next.replace(/_/g, " ").toLowerCase()}?`,
+      )
+    )
+      return;
+    setStatusSaving(true);
+    try {
+      await api(`/tables/${table.id}`, {
+        method: "PATCH",
+        json: { status: next },
+      });
+      await loadManagement(); // refetch so the header + everything reflects the new status
+    } catch {
+      alert("Couldn't update status.");
+    } finally {
+      setStatusSaving(false);
+    }
+  }
 
   // callable fetch — used on mount AND after an action
   const loadManagement = useCallback(async () => {
@@ -99,8 +139,48 @@ export default function ManageTablePage({
         >
           ← My tables
         </Link>
-        <h1 className="mt-1 text-2xl font-bold">Manage: {table.title}</h1>
+        <div className="mt-1 flex items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold">Manage: {table.title}</h1>
+
+          {/* Status — quick lifecycle control */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">Status:</span>
+            <select
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              value={table.status}
+              onChange={(e) =>
+                handleStatusChange(e.target.value as TableStatus)
+              }
+              disabled={statusSaving}
+            >
+              <option value={TableStatus.OPEN}>Open</option>
+              <option value={TableStatus.FULL}>Full</option>
+              <option value={TableStatus.IN_PROGRESS}>In progress</option>
+              <option value={TableStatus.COMPLETED}>Completed</option>
+              <option value={TableStatus.CANCELLED}>Cancelled</option>
+            </select>
+            {statusSaving && <span className="text-xs text-gray-400">…</span>}
+          </div>
+        </div>
       </div>
+
+      <button
+        onClick={() => setDeleteOpen(true)}
+        className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+      >
+        Delete table
+      </button>
+
+      <ConfirmModal
+        open={deleteOpen}
+        title="Delete this table?"
+        message="This removes the table and its listing. Members will lose access."
+        confirmLabel="Delete"
+        danger
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Column 1 — table info */}

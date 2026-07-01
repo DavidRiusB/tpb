@@ -5,6 +5,7 @@ import { ExperienceLevel } from "@/lib/enums/experience-level.enum";
 import { Recurrence } from "@/lib/enums/recurrence.enum";
 import { TableType } from "@/lib/enums/table-type.enum";
 import { useState } from "react";
+import { TableStatus } from "@/lib/enums/table-status.enum";
 
 export type TableFormValues = {
   title: string;

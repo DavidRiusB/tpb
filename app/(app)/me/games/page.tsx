@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -15,8 +15,20 @@ export default function MyGamesPage() {
 
   const [data, setData] = useState<MyTablesResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [withdrawing, setWithdrawing] = useState<string | null>(null);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
 
-  // per-page auth gate (until the route-group gate exists)
+  // callable fetch — used on mount AND after withdraw
+  const loadMyGames = useCallback(async () => {
+    try {
+      const res = await api<MyTablesResponse>("/tables/me");
+      setData(res);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login?redirect=/me/games");
@@ -24,20 +36,23 @@ export default function MyGamesPage() {
   }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (!user) return;
-    let active = true;
-    (async () => {
-      try {
-        const res = await api<MyTablesResponse>("/tables/me");
-        if (active) setData(res);
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [user]);
+    if (user) loadMyGames();
+  }, [user, loadMyGames]);
+
+  async function handleWithdraw(tableId: string, requestId: string) {
+    if (!window.confirm("Withdraw this join request?")) return;
+    setWithdrawing(requestId);
+    try {
+      await api(`/tables/${tableId}/requests/${requestId}`, {
+        method: "DELETE",
+      });
+      await loadMyGames(); // request drops from pending
+    } catch {
+      alert("Couldn't withdraw the request.");
+    } finally {
+      setWithdrawing(null);
+    }
+  }
 
   if (authLoading || loading) {
     return <main className="p-8 text-gray-500">Loading…</main>;
@@ -45,11 +60,9 @@ export default function MyGamesPage() {
 
   if (!data) return null;
 
-  // active memberships = games you're currently in
   const activeMemberships = data.memberships.filter(
     (m) => m.status === MembershipStatus.ACTIVE,
   );
-  // pending requests = sent, awaiting DM decision
   const pendingRequests = data.joinRequests.filter(
     (r) => r.status === JoinRequestStatus.PENDING,
   );
@@ -94,14 +107,27 @@ export default function MyGamesPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {pendingRequests.map((r) => (
-              <Link
+              <div
                 key={r.id}
-                href={`games/${r.table.id}`} // well this is a problem
-                className="rounded-lg border border-gray-300 bg-white p-3 hover:bg-gray-50"
+                className="flex items-center justify-between rounded-lg border border-gray-300 bg-white p-3"
               >
-                <span className="font-medium">{r.table.title}</span>
-                <span className="ml-2 text-xs text-gray-400">Awaiting DM</span>
-              </Link>
+                <Link
+                  href={`/tables/${r.table.id}`}
+                  className="flex-1 hover:underline"
+                >
+                  <span className="font-medium">{r.table.title}</span>
+                  <span className="ml-2 text-xs text-gray-400">
+                    Awaiting DM
+                  </span>
+                </Link>
+                <button
+                  onClick={() => handleWithdraw(r.table.id, r.id)}
+                  disabled={withdrawing === r.id}
+                  className="ml-3 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {withdrawing === r.id ? "…" : "Withdraw"}
+                </button>
+              </div>
             ))}
           </div>
         )}
