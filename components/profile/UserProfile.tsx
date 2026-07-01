@@ -1,22 +1,16 @@
-import { ReviewCard } from "@/components/cards/ReviewCard";
-import { type PlayerDetail, type PlayerReview } from "@/types/player-detail";
-import { ReviewType } from "@/types/review-type.enum";
+import { ReviewCard } from "@/components/cards/ReviewCard"; // remove if now unused here
+import { type PlayerDetail } from "@/types/player-detail";
+import { ReviewSections } from "@/components/reviews/ReviewSections";
 
 export function UserProfile({ profile }: { profile: PlayerDetail }) {
-  // split reviews by type — DM review or player review
-  const dmReviews: PlayerReview[] = [];
-  const playerReviews: PlayerReview[] = [];
-  for (const review of profile.reviews) {
-    if (review.type === ReviewType.DM) dmReviews.push(review);
-    else playerReviews.push(review);
-  }
-
   return (
     <div>
       {/* Header */}
+
       <div className="mb-6 flex items-start gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-2xl font-medium text-gray-600">
           {(profile.displayName ?? profile.username).charAt(0).toUpperCase()}
+          {/* Avatar placeholder */}
         </div>
         <div>
           <h1 className="text-2xl font-bold">
@@ -42,11 +36,8 @@ export function UserProfile({ profile }: { profile: PlayerDetail }) {
         </div>
       )}
 
-      {/* Review boxes */}
-      <div className="flex flex-col gap-6">
-        <ReviewBox title="As a DM" reviews={dmReviews} />
-        <ReviewBox title="As a Player" reviews={playerReviews} />
-      </div>
+      {/* Reviews — tabbed */}
+      <ReviewSections reviews={profile.reviews} />
     </div>
   );
 }
@@ -63,28 +54,5 @@ function TagRow({ label, tags }: { label: string; tags: string[] }) {
         ))}
       </div>
     </div>
-  );
-}
-
-function ReviewBox({
-  title,
-  reviews,
-}: {
-  title: string;
-  reviews: PlayerReview[];
-}) {
-  return (
-    <section>
-      <h2 className="mb-2 text-lg font-semibold">{title}</h2>
-      {reviews.length === 0 ? (
-        <p className="text-sm text-gray-400">No reviews yet.</p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {reviews.map((r) => (
-            <ReviewCard key={r.id} review={r} />
-          ))}
-        </div>
-      )}
-    </section>
   );
 }
